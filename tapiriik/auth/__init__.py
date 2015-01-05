@@ -7,6 +7,7 @@ from tapiriik.settings import DIAG_AUTH_TOTP_SECRET, DIAG_AUTH_PASSWORD
 from datetime import datetime, timedelta
 from pymongo.read_preferences import ReadPreference
 from bson.objectid import ObjectId
+
 import copy
 
 class User:
@@ -22,8 +23,9 @@ class User:
         return db.users.find_one({"ConnectedServices.ID": svcRec._id})
 
     def Ensure(req):
+        from ipware.ip import get_real_ip
         if req.user == None:
-            req.user = User.Create()
+            req.user = User.Create(creationIP=get_real_ip(req))
             User.Login(req.user, req)
         return req.user
 
@@ -35,8 +37,8 @@ class User:
         del req.session["userid"]
         del req.user
 
-    def Create():
-        uid = db.users.insert({"Created": datetime.utcnow()})  # will mongodb insert an almost empty doc, i.e. _id?
+    def Create(creationIP=None):
+        uid = db.users.insert({"Created": datetime.utcnow(), "CreationIP": creationIP})  # will mongodb insert an almost empty doc, i.e. _id?
         return db.users.find_one({"_id": uid}, read_preference=ReadPreference.PRIMARY)
 
     def GetConnectionRecordsByUser(user):
@@ -141,7 +143,8 @@ class User:
                 user["AncestorAccounts"] = []
             user["AncestorAccounts"] += existingUser["AncestorAccounts"] if "AncestorAccounts" in existingUser else []
             user["AncestorAccounts"] += [existingUser["_id"]]
-            user["Timezone"] = user["Timezone"] if user["Timezone"] else existingUser["Timezone"]
+            user["Timezone"] = user["Timezone"] if "Timezone" in user and user["Timezone"] else (existingUser["Timezone"] if "Timezone" in existingUser else None)
+            user["CreationIP"] = user["CreationIP"] if "CreationIP" in user and user["CreationIP"] else (existingUser["CreationIP"] if "CreationIP" in existingUser else None)
             existing_config = existingUser["Config"] if "Config" in existingUser else {}
             existing_config.update(user["Config"] if "Config" in user else {})
             user["Config"] = existing_config

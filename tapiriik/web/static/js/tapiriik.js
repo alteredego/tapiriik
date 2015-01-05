@@ -52,7 +52,6 @@ tapiriik.Init = function(){
 	});
 	$(".reclaimButton").click(tapiriik.PaymentReclaimDialogLinkClicked);
 	$(".promoButton").click(tapiriik.PaymentPromoDialogLinkClicked);
-	$(".syncSettingsNubbin").click(tapiriik.SyncSettingsLinkClicked);
 
 	if (tapiriik.User !== undefined) {
 		for (var i in tapiriik.ServiceInfo) {
@@ -304,7 +303,7 @@ tapiriik.ActivateSetupDialog = function(svcId){
 tapiriik.OpenServiceConfigPanel = function(svcId){
 	if ($(".service#"+svcId+" .flowConfig").length>0) return; //it's already open
 	tapiriik.DoDismissConfigPanel();
-	var configPanel = $("<form class=\"flowConfig\"><h1>Options</h1><div class=\"configSection\"><h2>send activities to...</h2><table class=\"serviceTable\"></table></div><div class=\"configSection\" id=\"sync_private_section\"><input type=\"checkbox\" id=\"sync_private\"/><label for=\"sync_private\">Sync private activities</label></div><span class=\"fineprint\">Settings will take effect at next sync</span><button id=\"setup\">Setup</button><button id=\"save\">Save</button><button id=\"disconnect\" class=\"delete\">X</button></form>");
+	var configPanel = $("<form class=\"flowConfig\"><h1>Options</h1><div class=\"configSection\"><h2>send activities to...</h2><table class=\"serviceTable\"></table></div><div class=\"configSection\" id=\"sync_private_section\"><input type=\"checkbox\" id=\"sync_private\"/><label for=\"sync_private\">Sync private activities</label></div><span class=\"fineprint\">Settings will take effect at next sync</span><button id=\"setup\">Setup</button><button id=\"save\">Save</button><button id=\"disconnect\" class=\"delete\">Disconnect</button></form>");
 	for (var i in tapiriik.ServiceInfo) {
 		if (i == svcId || !tapiriik.ServiceInfo[i].Connected || !tapiriik.ServiceInfo[i].ReceivesActivities) continue;
 		var destSvc = tapiriik.ServiceInfo[i];
@@ -683,16 +682,6 @@ tapiriik.OpenPaymentPromoClaimCompletedDialog = function(){
 		window.location.reload();
 	});
 	tapiriik.CreateServiceDialog("tapiriik",form);
-};
-
-tapiriik.SyncSettingsLinkClicked = function() {
-	// This is getting absurd, if I haven't said that already
-	// But hey, easier to add a few more lines than change the entire thing to Angular :(
-	if ($(".syncSettingsBlock").is(":visible")) {
-		$.address.value("");
-	} else {
-		$.address.value("settings");
-	}
 };
 
 tapiriik.OpenSyncSettingsDialog = function(){

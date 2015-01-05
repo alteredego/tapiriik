@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from tapiriik.settings import DIAG_AUTH_TOTP_SECRET, DIAG_AUTH_PASSWORD, SITE_VER
 from tapiriik.database import db
 from tapiriik.sync import Sync
@@ -223,6 +224,11 @@ def diag_payments(req):
     for payment in payments:
         payment["Accounts"] = [x["_id"] for x in db.users.find({"Payments.Txn": payment["Txn"]}, {"_id":1})]
     return render(req, "diag/payments.html", {"payments": payments})
+
+@diag_requireAuth
+def diag_ip(req):
+    from ipware.ip import get_real_ip
+    return HttpResponse(get_real_ip(req))
 
 def diag_login(req):
     if "password" in req.POST:
