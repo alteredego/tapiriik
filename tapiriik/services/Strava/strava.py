@@ -62,7 +62,8 @@ class StravaService(ServiceBase):
         "IceSkate": ActivityType.Skating,
         "Workout": ActivityType.Gym,
         "Rowing": ActivityType.Rowing,
-        "Elliptical": ActivityType.Elliptical
+        "Elliptical": ActivityType.Elliptical,
+        "RockClimbing": ActivityType.Climbing
     }
 
     SupportedActivities = list(_activityTypeMappings.keys())
